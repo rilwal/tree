@@ -19,7 +19,7 @@ void Renderer::initialize() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 
-	s_Data.window = glfwCreateWindow(1920, 1080, "GLE", nullptr, nullptr);
+	s_Data.window = glfwCreateWindow(1920, 1080, "Tree", nullptr, nullptr);
 
 	glfwMakeContextCurrent(s_Data.window);
 	gladLoadGL(glfwGetProcAddress);
@@ -40,9 +40,13 @@ void Renderer::begin_frame() {
 	glfwGetFramebufferSize(s_Data.window, &display_w, &display_h);
 	glViewport(0, 0, display_w, display_h);
 	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Renderer::end_frame() {
 	glfwSwapBuffers(s_Data.window);
+}
+
+GLFWwindow* Renderer::get_window() {
+	return s_Data.window;
 }

@@ -30,6 +30,8 @@ TODO: Renderer
 	TODO: Instanced rendering?
 */
 
+struct GLFWwindow;
+
 class Renderer {
 public:
 	static void initialize();
@@ -37,4 +39,5 @@ public:
 
 	static void begin_frame();
 	static void end_frame();
+	static GLFWwindow* get_window();
 };

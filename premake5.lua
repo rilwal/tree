@@ -32,7 +32,11 @@ project "Engine"
     {
       "src/**.cpp",
       "src/**.hpp",
-      "vendor/glad/src/gl.c"
+      "vendor/glad/src/gl.c",
+      "vendor/imgui/*.cpp",
+      "vendor/imgui/backends/imgui_impl_opengl3.cpp",
+      "vendor/imgui/backends/imgui_impl_glfw.cpp"
+
     }
 
     includedirs 
