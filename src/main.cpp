@@ -13,7 +13,7 @@
 #include "renderer/camera.hpp"
 
 #include "util.hpp"
-
+#include "tree.hpp"
 #include "gui/gui.hpp"
 
 int main() {
