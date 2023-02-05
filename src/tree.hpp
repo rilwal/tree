@@ -4,6 +4,11 @@
 #include <memory>
 #include "glm.hpp"
 
+//Branch as represented on GPU
+struct GpuBrach {
+	glm::vec2 origin, direction;
+	float length, width;
+};
 
 struct Branch {
 	Branch(glm::vec2 origin, glm::vec2 direction, float length, float width);
@@ -20,6 +25,20 @@ void Branch::add_child() {
 
 }
 
+std::vector<GpuBrach> flatten(Branch& b, std::vector<GpuBrach>& vec) {
+	
+	for (auto& child : b.children) {
+		flatten(*child, vec);
+	}
+
+	vec.push_back(GpuBrach{ b.origin, b.direction, b.length, b.width });
+}
+
+std::vector<GpuBrach> flatten(Branch b) {
+	std::vector<GpuBrach> vec;
+	flatten(b, vec);
+	return vec;
+}
 
 void treee() {
 	Branch trunk(glm::vec2(0, 0), glm::vec2(0, 1), 100, 500);
