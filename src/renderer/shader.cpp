@@ -268,17 +268,24 @@ void Shader::introspect() {
 		int uniform_size;
 
 		glGetActiveUniform(gl_id, i, 1024, &length, &uniform_size, &uniform_type, uniform_name);
+
+
 		ShaderDataType t = GetShaderDataType(uniform_type);
+		auto scr = strncmp(uniform_name, "c_", 2);
+		if (t == ShaderDataType::Vec3 && scr == 0) t = ShaderDataType::Color;
+
 		Uniform u(t);
 
 		u.location = glGetUniformLocation(gl_id, uniform_name);
 		u.name = uniform_name;
 
 		switch (t) {
-		case ShaderDataType::F32:
+		case ShaderDataType::F32:			
 			glGetUniformfv(gl_id, u.location, &u.get<float>());
 			break;
 		case ShaderDataType::Vec3:
+		case ShaderDataType::Color:
+
 			glGetUniformfv(gl_id, u.location, &u.get<glm::vec3>()[0]);
 			break;
 		}

@@ -21,17 +21,17 @@ uniform float scale = 1.0;
 
 uniform float tree_height = 600;
 
-uniform vec3 sky_top = vec3(0, .9, .85);
-uniform vec3 sky_bottom = vec3(1, 1, 1);
+uniform vec3 c_sky_top = vec3(0, .9, .85);
+uniform vec3 c_sky_bottom = vec3(1, 1, 1);
 
-uniform vec3 ground_color = vec3(.137, .083, .012);
-uniform vec3 base_tree_color = vec3(.6, 0.45, 0.345);
+uniform vec3 c_ground_color = vec3(.137, .083, .012);
+uniform vec3 c_base_tree_color = vec3(.6, 0.45, 0.345);
 uniform float tree_base_width = 50;
 
 uniform float ground_height = 300;
 uniform float gamma = .69;
 
-uniform vec3 light_color = vec3(1, 1, 1);
+uniform vec3 c_light_color = vec3(1, 1, 1);
 
 vec3 lerp(vec3 a, vec3 b, float f) {
     return a * f + b * (1 - f);
@@ -103,10 +103,10 @@ void main() {
     float y = ((gl_FragCoord.y / vp_height) * vp_height + camera_pos.y) * scale;
 
     if (y < ground_height) {
-        color = ground_color;
+        color = c_ground_color;
     } else {
 	    float sky_blend_ratio = clamp((y - ground_height) / (vp_height - ground_height), 0, 1);
-        color = lerp(sky_top, sky_bottom, sky_blend_ratio);
+        color = lerp(c_sky_top, c_sky_bottom, sky_blend_ratio);
     }
 
 
@@ -128,8 +128,8 @@ void main() {
             vec3 L = normalize(light_pos - vec3(x, y, 0));
             float LdotN = dot(L, normal);
 
-            color = base_tree_color * light_color * max(0, LdotN)+
-                base_tree_color * light_color * .5;
+            color = c_base_tree_color * c_light_color * max(0, LdotN)+
+                c_base_tree_color * c_light_color * .5;
         }
     }
 

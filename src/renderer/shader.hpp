@@ -44,7 +44,7 @@ struct Uniform {
 	}
 
 	//take c type and data type and make getter
-#define UniformGetter(ct, dt, m) template<> auto& get<ct>() { assert(type == ShaderDataType::dt); return _data.m; } 
+#define UniformGetter(ct, dt, m) template<> auto& get<ct>() { return _data.m; } 
 	UniformGetter(float,  F32, f);
 	UniformGetter(double, F64, d);
 	UniformGetter(glm::vec2, Vec2, v2);
