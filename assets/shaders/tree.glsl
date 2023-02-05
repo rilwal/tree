@@ -3,12 +3,14 @@
 layout(location = 0) in vec2 vertex_position;
 
 void main() {
-	gl_Position = vec4(vertex_position * .9, 0, 1);
+	gl_Position = vec4(vertex_position, 0, 1);
 }
 
 
 #type fragment
 out vec4 fragColour; 
+
+uniform vec2 camera_pos = vec2(0, 0);
 
 uniform float vp_height = 1000;
 uniform float vp_width = 1920;
@@ -55,13 +57,6 @@ struct Branch {
 };
 
 
-float dist_from_pt_to_line(vec2 l1, vec2 l2, vec2 p) {
-    return length(p - point_line_proj(l1, l2, p));
-    //return abs((l2.x - l1.x) * (l1.y - p.y) - (l1.x - p.x) * (l2.y - l1.y))
-    //    / sqrt(pow(l2.x - l1.x, 2) + pow(l2.y - l1.y, 2));  
-}
-
-
 vec3 render_branch(vec2 pt, Branch b) {
     vec2 projected = point_line_proj(b.origin, b.dir, pt);
     vec2 perpendicular = pt - projected;
@@ -84,14 +79,12 @@ vec3 render_branch(vec2 pt, Branch b) {
         
         float dist_to_tree = length(perpendicular);
         
-        if (dist_to_tree < tree_width) {
-            float dist_percent = dist_to_tree / (tree_width);
+        if (dist_to_tree < tree_width / 2) {
+            float dist_percent = dist_to_tree / (tree_width / 2);
             vec3 front_normal = vec3(0, 0, 1);
-            vec3 side_normal = normalize(vec3(normalize(perpendicular), 0));
+            vec3 side_normal = normalize(vec3(perpendicular, 0));
 
-            vec3 normal = dist_percent * side_normal +  (1 - dist_percent) * front_normal;
-            normal = normalize(normal);
-
+            vec3 normal = normalize(lerp(front_normal, side_normal, 1-dist_percent));
             return normal;
         }
     }
@@ -101,21 +94,18 @@ vec3 render_branch(vec2 pt, Branch b) {
 
 
 void main() {
-    vec3 light_pos = vec3(vp_width / 2, vp_height, 30);
+    vec3 light_pos = vec3(vp_width / 2, vp_height, 500);
 
     vec3 color = vec3(0);
 
-    vec3 avg_sky_color = (sky_top + sky_bottom) / 2;
-    //vec3 light_color = lerp(avg_sky_color, vec3(1), .2);
 
-
-    float x = (gl_FragCoord.x / vp_width - .5) * vp_width;
-    float y = (gl_FragCoord.y / vp_height) * vp_height;
+    float x = ((gl_FragCoord.x / vp_width - .5) * vp_width + camera_pos.x) * scale;
+    float y = ((gl_FragCoord.y / vp_height) * vp_height + camera_pos.y) * scale;
 
     if (y < ground_height) {
         color = ground_color;
     } else {
-	    float sky_blend_ratio = (y - ground_height) / (vp_height - ground_height);
+	    float sky_blend_ratio = clamp((y - ground_height) / (vp_height - ground_height), 0, 1);
         color = lerp(sky_top, sky_bottom, sky_blend_ratio);
     }
 
@@ -134,17 +124,16 @@ void main() {
     for (int i = 0; i < 3; i++) {
         vec3 normal = render_branch(vec2(x, y), branches[i]);
 
-        if (length(normal) > .5) {
+        if (length(normal) > .001) {
             vec3 L = normalize(light_pos - vec3(x, y, 0));
             float LdotN = dot(L, normal);
-            float d_squared = dot(L, L);
 
-            color = normal;
-            //color = base_tree_color * light_color * max(0, LdotN);
+            color = base_tree_color * light_color * max(0, LdotN)+
+                base_tree_color * light_color * .5;
         }
     }
 
-    fragColour = vec4(pow(aces(color), vec3(1.0/gamma)), 1);
+    fragColour = vec4(color,1);//vec4(pow(aces(color), vec3(1.0/gamma)), 1);
 }
 
 
