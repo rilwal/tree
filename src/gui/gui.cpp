@@ -46,7 +46,13 @@ void gui_uniform(const char* label, Uniform& uniform) {
 		case ShaderDataType::F32:
 			ImGui::DragFloat(label, &uniform.get<float>(), .01);
 		break;
+		case ShaderDataType::Vec2:
+			ImGui::DragFloat2(label, (float*)& uniform.get<glm::vec2>());
+		break;
 		case ShaderDataType::Vec3:
+			ImGui::DragFloat3(label, (float*)& uniform.get<glm::vec3>());
+		break;
+		case ShaderDataType::Color:
 			ImGui::ColorEdit3(label, (float*)& uniform.get<glm::vec3>());
 		break;
 	}
